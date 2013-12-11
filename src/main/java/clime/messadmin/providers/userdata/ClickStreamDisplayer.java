@@ -41,27 +41,19 @@ public class ClickStreamDisplayer implements SessionDataProvider {
 	}
 
 	/**
-	 * Convenience method for i18n
-	 */
-	protected ClassLoader getClassLoader(final HttpSession session) {
-		return Server.getInstance().getApplication(session.getServletContext()).getApplicationInfo().getClassLoader();
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public String getSessionDataTitle(HttpSession httpSession) {
+		ClassLoader cl = I18NSupport.getClassLoader(httpSession);
 		NumberFormat numberFormatter = NumberFormat.getNumberInstance(I18NSupport.getAdminLocale());
 		NumberFormat bytesFormatter = BytesFormat.getBytesInstance(I18NSupport.getAdminLocale(), true);
 		Session session = Server.getInstance().getSession(httpSession);
 		List data = new ArrayList(Utils.getPluginData(session));
-		ClassLoader cl = Server.getInstance().getApplication(httpSession.getServletContext()).getApplicationInfo().getClassLoader();
         long currentItemSize = SizeOfProvider.Util.getObjectSize(data, cl);
-		String result = I18NSupport.getLocalizedMessage(BUNDLE_NAME, getClassLoader(httpSession), "title",//$NON-NLS-1$
-				new Object[] {
+		String result = I18NSupport.getLocalizedMessage(BUNDLE_NAME, cl, "title",//$NON-NLS-1$
 					bytesFormatter.format(currentItemSize),
 					numberFormatter.format(data.size())
-				});
+				);
 		return result;
 	}
 
